@@ -1,19 +1,7 @@
-/* eslint-disable perfectionist/sort-union-types */
 /* eslint-disable perfectionist/sort-objects */
-/* eslint-disable perfectionist/sort-interfaces */
 import { z } from "zod";
 
-export interface SchemaAnalysis {
-    expectedFields: string[];
-    requiredFields: string[];
-}
-
-export interface ValidationResult {
-    expectedFields: string[];
-    missingFields: string[];
-    unexpectedFields: string[];
-    fieldErrors?: Record<string, string[]>;
-}
+import type { SchemaAnalysis, ValidationResult } from "@/types/index.js";
 
 export const SchemaUtil = {
     /**
@@ -73,11 +61,11 @@ export const SchemaUtil = {
         }
 
         const missingFields = actualRequiredFields.filter(
-            (field) => !requestFields.includes(field),
+            (field: string) => !requestFields.includes(field),
         );
 
         const unexpectedFields = requestFields.filter(
-            (field) => !actualExpectedFields.includes(field),
+            (field: string) => !actualExpectedFields.includes(field),
         );
 
         return {
@@ -85,23 +73,6 @@ export const SchemaUtil = {
             missingFields,
             unexpectedFields,
         };
-    },
-
-    /**
-     * Get schema for a given route and method
-     */
-    getSchemaForRoute(path: string, method: string): z.ZodType | null {
-        // Normalize path by removing /api/v1 prefix if present
-        const normalizedPath = path.replace(/^\/api\/v1/, "");
-
-        // For now, we'll handle login route specifically
-        // In a larger application, this could be expanded to a registry
-        if (normalizedPath === "/auth/login" && method === "POST") {
-            // Return a flag to indicate login schema should be used
-            return "login" as unknown as z.ZodType;
-        }
-
-        return null;
     },
 
     /**

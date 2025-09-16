@@ -1,65 +1,66 @@
 /* eslint-disable perfectionist/sort-objects */
 /* eslint-disable perfectionist/sort-object-types */
-import {
-    ErrorResponse,
-    FieldErrors,
-    SuccessResponse,
-} from "@/schemas/response.schema.js";
+import { Response } from "express";
 
-export const ResponseUtil = {
-    success<T>(params: { statusCode?: number; message?: string; data: T }): {
-        statusCode: number;
-        response: SuccessResponse<T>;
-    } {
-        const { data, message, statusCode = 200 } = params;
-        return {
-            statusCode,
-            response: {
-                message,
-                data,
-            },
-        };
+import { FieldErrors } from "@/schemas/response.schema.js";
+
+// Enhanced Response Helper - langsung kirim response tanpa perlu res.status().json()
+export const ResponseHelper = {
+    // Untuk success response dengan data (GET, login, dll)
+    success(
+        res: Response,
+        params: { statusCode?: number; message?: string; data: unknown },
+    ): void {
+        const { statusCode = 200, message, data } = params;
+        res.status(statusCode).json({
+            message,
+            data,
+        });
     },
 
-    error(params: { message: string; statusCode?: number }): {
-        statusCode: number;
-        response: ErrorResponse;
-    } {
+    // Untuk success response tanpa data (CREATE, UPDATE, DELETE)
+    successNoData(
+        res: Response,
+        params: { statusCode?: number; message: string },
+    ): void {
+        const { statusCode = 200, message } = params;
+        res.status(statusCode).json({
+            message,
+        });
+    },
+
+    // Untuk error response
+    error(
+        res: Response,
+        params: { message: string; statusCode?: number },
+    ): void {
         const { message, statusCode = 500 } = params;
-        return {
-            statusCode,
-            response: {
-                message,
-            },
-        };
+        res.status(statusCode).json({
+            message,
+        });
     },
 
-    fieldErrors(params: { errors: FieldErrors; statusCode?: number }): {
-        statusCode: number;
-        response: ErrorResponse;
-    } {
+    // Untuk field validation errors
+    fieldErrors(
+        res: Response,
+        params: { errors: FieldErrors; statusCode?: number },
+    ): void {
         const { errors, statusCode = 400 } = params;
-        return {
-            statusCode,
-            response: {
-                errors,
-            },
-        };
+        res.status(statusCode).json({
+            errors,
+        });
     },
 
-    validationError(params: {
-        statusCode?: number;
-        field: string;
-        message: string;
-    }): { statusCode: number; response: ErrorResponse } {
+    // Untuk single field validation error
+    validationError(
+        res: Response,
+        params: { field: string; message: string; statusCode?: number },
+    ): void {
         const { field, message, statusCode = 400 } = params;
-        return {
-            statusCode,
-            response: {
-                errors: {
-                    [field]: [message],
-                },
+        res.status(statusCode).json({
+            errors: {
+                [field]: [message],
             },
-        };
+        });
     },
 };

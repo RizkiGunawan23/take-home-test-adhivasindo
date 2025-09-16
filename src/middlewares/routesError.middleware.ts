@@ -1,11 +1,14 @@
 /* eslint-disable perfectionist/sort-objects */
 import { NextFunction, Request, Response } from "express";
 
+import { HTTP_STATUS } from "@/constants/index.js";
 import { getAllRoutes } from "@/helper/routes.helper.js";
+import { ResponseHelper } from "@/utils/response.util.js";
 
 export const routeNotFoundMiddleware = (req: Request, res: Response) => {
-    res.status(404).json({
+    ResponseHelper.error(res, {
         message: `Endpoint ${req.method} '${req.originalUrl}' not found`,
+        statusCode: HTTP_STATUS.NOT_FOUND,
     });
 };
 
@@ -39,7 +42,7 @@ export const routeMethodNotAllowedMiddleware = (
             (method) => method !== "HEAD",
         );
         res.set("Allow", allowedMethods.join(", "));
-        return res.status(405).json({
+        return res.status(HTTP_STATUS.METHOD_NOT_ALLOWED).json({
             message: `Method ${req.method} not allowed for '${req.originalUrl}'`,
             allowedMethods: allowedMethods,
         });

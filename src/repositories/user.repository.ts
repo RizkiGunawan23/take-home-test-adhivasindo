@@ -1,3 +1,5 @@
+/* eslint-disable perfectionist/sort-object-types */
+/* eslint-disable perfectionist/sort-classes */
 /* eslint-disable perfectionist/sort-union-types */
 import { PrismaClient } from "../../generated/prisma/index.js";
 
@@ -13,6 +15,17 @@ export class UserRepository {
     async findById(id: string) {
         return await this.prisma.user.findUnique({
             where: { id },
+        });
+    }
+
+    async create(data: {
+        email: string;
+        password: string;
+        name?: string | null;
+        role: "USER" | "ADMIN";
+    }) {
+        return await this.prisma.user.create({
+            data,
         });
     }
 

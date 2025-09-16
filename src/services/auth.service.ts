@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-classes */
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -5,15 +6,11 @@ import { ERROR_MESSAGES, JWT_CONSTANTS } from "@/constants/index.js";
 import { UserRepository } from "@/repositories/user.repository.js";
 import {
     AuthTokens,
+    LoginData,
     LoginResponse,
     RefreshTokenResponse,
-} from "@/schemas/response.schema.js";
-import { AppError } from "@/utils/errors.js";
-
-export interface LoginData {
-    email: string;
-    password: string;
-}
+} from "@/types/index.js";
+import { UnauthorizedError } from "@/utils/errors.util.js";
 
 export class AuthService {
     constructor(private userRepository: UserRepository) {}
@@ -22,7 +19,7 @@ export class AuthService {
         const user = await this.userRepository.findByEmail(data.email);
 
         if (!user) {
-            throw new AppError(ERROR_MESSAGES.INVALID_CREDENTIALS, 401);
+            throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -31,7 +28,7 @@ export class AuthService {
         );
 
         if (!isPasswordValid) {
-            throw new AppError(ERROR_MESSAGES.INVALID_CREDENTIALS, 401);
+            throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
         }
 
         // Generate tokens
@@ -65,6 +62,7 @@ export class AuthService {
                 JWT_CONSTANTS.REFRESH_SECRET,
             ) as {
                 email: string;
+                iat?: number; // issued at timestamp
                 role: string;
                 userId: string;
             };
@@ -73,28 +71,54 @@ export class AuthService {
             const user = await this.userRepository.findById(decoded.userId);
 
             if (!user || user.refreshToken !== refreshToken) {
-                throw new AppError(ERROR_MESSAGES.INVALID_TOKEN, 401);
+                throw new UnauthorizedError(ERROR_MESSAGES.INVALID_TOKEN);
             }
 
-            // Generate new tokens
-            const tokens = this.generateTokens(
-                user.id,
-                user.email,
-                user.role as string,
+            // Check if refresh token is expired (optional additional check)
+            const now = Math.floor(Date.now() / 1000);
+            const tokenAge = now - (decoded.iat ?? 0);
+
+            // Convert JWT expiry string to seconds
+            const refreshExpiry = JWT_CONSTANTS.REFRESH_EXPIRES_IN;
+            const maxAge = this.convertJwtExpiryToSeconds(refreshExpiry);
+
+            if (tokenAge > maxAge) {
+                // Token too old, require re-login
+                await this.userRepository.update(user.id, {
+                    refreshToken: null,
+                });
+                throw new UnauthorizedError(ERROR_MESSAGES.TOKEN_EXPIRED);
+            }
+
+            const accessToken = (
+                jwt.sign as (
+                    payload: object,
+                    secret: string,
+                    options?: object,
+                ) => string
+            )(
+                {
+                    email: user.email,
+                    role: user.role as string,
+                    type: "access",
+                    userId: user.id,
+                },
+                JWT_CONSTANTS.ACCESS_SECRET,
+                { expiresIn: JWT_CONSTANTS.ACCESS_EXPIRES_IN },
             );
 
-            // Update refresh token in database
-            await this.userRepository.update(user.id, {
-                refreshToken: tokens.refreshToken,
-            });
-
-            return { tokens };
+            return {
+                tokens: {
+                    accessToken,
+                    refreshToken, // Return the same refresh token
+                },
+            };
         } catch (error) {
             if (error instanceof jwt.TokenExpiredError) {
-                throw new AppError(ERROR_MESSAGES.TOKEN_EXPIRED, 401);
+                throw new UnauthorizedError(ERROR_MESSAGES.TOKEN_EXPIRED);
             }
             if (error instanceof jwt.JsonWebTokenError) {
-                throw new AppError(ERROR_MESSAGES.INVALID_TOKEN, 401);
+                throw new UnauthorizedError(ERROR_MESSAGES.INVALID_TOKEN);
             }
             throw error;
         }
@@ -143,5 +167,31 @@ export class AuthService {
             accessToken,
             refreshToken,
         };
+    }
+
+    /**
+     * Convert JWT expiry string (e.g., "7d", "24h", "30m") to seconds
+     */
+    private convertJwtExpiryToSeconds(expiry: string): number {
+        const match = /^(\d+)([smhd])$/.exec(expiry);
+        if (!match) {
+            throw new Error(`Invalid JWT expiry format: ${expiry}`);
+        }
+
+        const value = parseInt(match[1], 10);
+        const unit = match[2];
+
+        switch (unit) {
+            case "d": // days
+                return value * 24 * 60 * 60;
+            case "h": // hours
+                return value * 60 * 60;
+            case "m": // minutes
+                return value * 60;
+            case "s": // seconds
+                return value;
+            default:
+                throw new Error(`Unsupported time unit: ${unit}`);
+        }
     }
 }

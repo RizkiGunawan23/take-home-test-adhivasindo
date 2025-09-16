@@ -7,7 +7,7 @@ import {
     routeMethodNotAllowedMiddleware,
     routeNotFoundMiddleware,
 } from "@/middlewares/routesError.middleware.js";
-import routes from "@/routes/index.routes.js";
+import routes from "@/routes/index.route.js";
 
 export const app = express();
 
