@@ -49,6 +49,17 @@ export interface RefreshTokenResponse {
     tokens: AuthTokens;
 }
 
+export interface StudentListItem {
+    nama: string;
+    nim: string;
+    ymd: string;
+}
+
+export interface StudentListResponse {
+    students: StudentListItem[];
+    pagination: PaginationMeta;
+}
+
 export interface SuccessResponse<T = unknown> {
     message?: string;
     data?: T;

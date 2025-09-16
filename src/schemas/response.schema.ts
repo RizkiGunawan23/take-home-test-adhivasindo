@@ -9,4 +9,4 @@ export type {
     RefreshTokenResponse,
     SuccessResponse,
     ValidationError,
-} from "@/types/index.js";
+} from "@/types/api.types.js";

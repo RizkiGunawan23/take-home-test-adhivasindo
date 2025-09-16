@@ -1,0 +1,124 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 17.5
+-- Dumped by pg_dump version 17.5
+
+-- Started on 2025-09-16 20:10:20
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 850 (class 1247 OID 16431)
+-- Name: Role; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."Role" AS ENUM (
+    'USER',
+    'ADMIN'
+);
+
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 217 (class 1259 OID 16412)
+-- Name: _prisma_migrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public._prisma_migrations (
+    id character varying(36) NOT NULL,
+    checksum character varying(64) NOT NULL,
+    finished_at timestamp with time zone,
+    migration_name character varying(255) NOT NULL,
+    logs text,
+    rolled_back_at timestamp with time zone,
+    started_at timestamp with time zone DEFAULT now() NOT NULL,
+    applied_steps_count integer DEFAULT 0 NOT NULL
+);
+
+
+--
+-- TOC entry 218 (class 1259 OID 16435)
+-- Name: users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users (
+    id text NOT NULL,
+    email text NOT NULL,
+    password text NOT NULL,
+    name text,
+    role public."Role" DEFAULT 'USER'::public."Role" NOT NULL,
+    refresh_token text,
+    created_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp(3) without time zone NOT NULL
+);
+
+
+--
+-- TOC entry 4902 (class 0 OID 16412)
+-- Dependencies: 217
+-- Data for Name: _prisma_migrations; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public._prisma_migrations (id, checksum, finished_at, migration_name, logs, rolled_back_at, started_at, applied_steps_count) FROM stdin;
+392ee76d-9d10-4660-8c65-8843b232b41f	edda3d1ac65ad0ecef5fba450554c222cd2f7aa5e4b063e8c417d676eb738db8	2025-09-15 20:53:20.189545+07	20250915135320_init	\N	\N	2025-09-15 20:53:20.181907+07	1
+\.
+
+
+--
+-- TOC entry 4903 (class 0 OID 16435)
+-- Dependencies: 218
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.users (id, email, password, name, role, refresh_token, created_at, updated_at) FROM stdin;
+eefe7137-6ea3-4caa-975e-1ca381a2e476	admin1@example.com	$2b$10$OoRbb8CceC4pGUt7ZLL3tuWOowQNsVd86klwRc.njR2UNZunhBsCy	Administrator 1	ADMIN	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluMUBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsInR5cGUiOiJyZWZyZXNoIiwidXNlcklkIjoiZWVmZTcxMzctNmVhMy00Y2FhLTk3NWUtMWNhMzgxYTJlNDc2IiwiaWF0IjoxNzU4MDI3NDg4LCJleHAiOjE3NTg2MzIyODh9.VLSkHx2BWl8UDvDXaSGqtnjxdj9_QFmAm00yFD6rfhE	2025-09-16 09:23:54.911	2025-09-16 12:58:08.034
+0d701e29-d878-4ef2-9769-7a417ed1a171	user2@example.com	$2b$10$jL.j0rS6hxhdGJVeid9DD.uSrMKFOvX/6hq4t9fiv4OaJcTL1GYQy	User Two	USER	\N	2025-09-16 12:58:14.575	2025-09-16 12:58:14.575
+bb1fc9e1-d53b-43ee-a76a-23c258451aae	user1@example.com	$2b$10$YI6s4CtGLuj6oJy/alh.oumG0L8W9eNujKSQsdRYq2lakWJWtO0zy	User One	USER	\N	2025-09-16 09:23:54.998	2025-09-16 09:23:54.998
+\.
+
+
+--
+-- TOC entry 4753 (class 2606 OID 16420)
+-- Name: _prisma_migrations _prisma_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public._prisma_migrations
+    ADD CONSTRAINT _prisma_migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4756 (class 2606 OID 16443)
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4754 (class 1259 OID 16444)
+-- Name: users_email_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email);
+
+
+-- Completed on 2025-09-16 20:10:20
+
+--
+-- PostgreSQL database dump complete
+--
+

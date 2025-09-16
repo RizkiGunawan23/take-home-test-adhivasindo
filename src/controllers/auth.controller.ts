@@ -1,7 +1,7 @@
 import { Response } from "express";
 
 import type { LoginInput, RefreshTokenInput } from "@/schemas/auth.schema.js";
-import type { TypedRequest } from "@/types/index.js";
+import type { TypedRequest } from "@/types/index.types.js";
 
 import { HTTP_STATUS, SUCCESS_MESSAGES } from "@/constants/index.js";
 import { AuthService } from "@/services/auth.service.js";

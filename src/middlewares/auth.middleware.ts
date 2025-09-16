@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 
-import type { AuthRequest } from "@/types/index.js";
+import type { AuthRequest } from "@/types/auth.types.js";
 
 import { HTTP_STATUS } from "@/constants/index.js";
 import { AppError } from "@/utils/errors.util.js";

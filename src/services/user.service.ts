@@ -12,7 +12,7 @@ import type {
     UpdateUserResponse,
     UserListResponse,
     UserResponse,
-} from "@/types/index.js";
+} from "@/types/index.types.js";
 
 import { UserRepository } from "@/repositories/user.repository.js";
 import { ConflictError, NotFoundError } from "@/utils/errors.util.js";

@@ -1,7 +1,7 @@
 /* eslint-disable perfectionist/sort-objects */
 import { z } from "zod";
 
-import type { SchemaAnalysis, ValidationResult } from "@/types/index.js";
+import type { SchemaAnalysis, ValidationResult } from "@/types/index.types.js";
 
 export const SchemaUtil = {
     /**

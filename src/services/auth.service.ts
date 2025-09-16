@@ -2,14 +2,15 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+import type { LoginData } from "@/types/index.types.js";
+
 import { ERROR_MESSAGES, JWT_CONSTANTS } from "@/constants/index.js";
 import { UserRepository } from "@/repositories/user.repository.js";
 import {
     AuthTokens,
-    LoginData,
     LoginResponse,
     RefreshTokenResponse,
-} from "@/types/index.js";
+} from "@/types/api.types.js";
 import { UnauthorizedError } from "@/utils/errors.util.js";
 
 export class AuthService {

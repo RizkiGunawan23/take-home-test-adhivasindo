@@ -6,7 +6,7 @@ import type {
     CreateUserInput,
     UpdateUserInput,
 } from "@/schemas/user.schema.js";
-import type { AuthTypedRequest, TypedRequest } from "@/types/index.js";
+import type { AuthTypedRequest, TypedRequest } from "@/types/index.types.js";
 
 import { HTTP_STATUS, SUCCESS_MESSAGES } from "@/constants/index.js";
 import { UserService } from "@/services/user.service.js";
