@@ -1,13 +1,13 @@
 import cors from "cors";
 import express from "express";
 
-import { CONFIG } from "@/config/index.js";
-import { errorHandler } from "@/middlewares/error.middleware.js";
+import { CONFIG } from "./config/index.js";
+import { errorHandler } from "./middlewares/error.middleware.js";
 import {
     routeMethodNotAllowedMiddleware,
     routeNotFoundMiddleware,
-} from "@/middlewares/routesError.middleware.js";
-import routes from "@/routes/index.route.js";
+} from "./middlewares/routesError.middleware.js";
+import routes from "./routes/index.route.js";
 
 export const app = express();
 

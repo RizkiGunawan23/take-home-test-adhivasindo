@@ -1,10 +1,15 @@
+/* eslint-disable perfectionist/sort-classes */
 /* eslint-disable perfectionist/sort-objects */
 import bcrypt from "bcrypt";
 
 import type { UserListQuery } from "@/schemas/query.schema.js";
-import type { CreateUserInput } from "@/schemas/user.schema.js";
+import type {
+    CreateUserInput,
+    UpdateUserInput,
+} from "@/schemas/user.schema.js";
 import type {
     CreateUserResponse,
+    UpdateUserResponse,
     UserListResponse,
     UserResponse,
 } from "@/types/index.js";
@@ -83,5 +88,68 @@ export class UserService {
             createdAt: user.createdAt.toISOString(),
             updatedAt: user.updatedAt.toISOString(),
         };
+    }
+
+    async updateUser(
+        id: string,
+        inputData: UpdateUserInput,
+    ): Promise<UpdateUserResponse> {
+        // Check if user exists
+        const existingUser = await this.userRepository.findById(id);
+        if (!existingUser) {
+            throw new NotFoundError("User not found");
+        }
+
+        // Check if email is being updated and if it conflicts with another user
+        if (inputData.email && inputData.email !== existingUser.email) {
+            const userWithEmail = await this.userRepository.findByEmail(
+                inputData.email,
+            );
+            if (userWithEmail) {
+                throw new ConflictError("User with this email already exists");
+            }
+        }
+
+        // Prepare update data
+        const updateData: {
+            email?: string;
+            name?: null | string;
+            password?: string;
+            role?: "ADMIN" | "USER";
+        } = {};
+
+        if (inputData.email !== undefined) {
+            updateData.email = inputData.email;
+        }
+        if (inputData.name !== undefined) {
+            updateData.name = inputData.name;
+        }
+        if (inputData.role !== undefined) {
+            updateData.role = inputData.role;
+        }
+        if (inputData.password !== undefined) {
+            updateData.password = await bcrypt.hash(inputData.password, 10);
+        }
+
+        const user = await this.userRepository.update(id, updateData);
+
+        return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            createdAt: user.createdAt.toISOString(),
+            updatedAt: user.updatedAt.toISOString(),
+        };
+    }
+
+    async deleteUser(id: string): Promise<void> {
+        // Check if user exists
+        const existingUser = await this.userRepository.findById(id);
+        if (!existingUser) {
+            throw new NotFoundError("User not found");
+        }
+
+        await this.userRepository.delete(id);
     }
 }

@@ -54,6 +54,15 @@ export interface SuccessResponse<T = unknown> {
     data?: T;
 }
 
+export interface UpdateUserResponse {
+    id: string;
+    email: string;
+    name: null | string;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface UserListItem {
     id: string;
     email: string;

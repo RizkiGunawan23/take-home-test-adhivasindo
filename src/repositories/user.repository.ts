@@ -107,4 +107,10 @@ export class UserRepository {
             where: { id },
         });
     }
+
+    async delete(id: string) {
+        return await this.prisma.user.delete({
+            where: { id },
+        });
+    }
 }
