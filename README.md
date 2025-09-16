@@ -77,29 +77,31 @@ Aplikasi akan berjalan di `http://localhost:3000` dengan hot reload.
 
 ### Production Mode
 
-```bash
+````bash
 npm run build
 npm start
 ```
 
 ## 📁 Struktur Proyek
 
-```
+````
+
 take-home-test-adhivasindo/
 ├── src/
-│   ├── index.ts              # Entry point aplikasi
-│   ├── schemas/              # Validasi schema (Zod)
-│   └── ...
+│ ├── index.ts # Entry point aplikasi
+│ ├── schemas/ # Validasi schema (Zod)
+│ └── ...
 ├── prisma/
-│   ├── schema.prisma         # Schema database Prisma
-│   ├── seed.ts               # Seeder untuk data awal
-│   └── migrations/           # File migrasi database
-├── generated/                # Prisma Client (generated)
-├── .env                      # Environment variables
+│ ├── schema.prisma # Schema database Prisma
+│ ├── seed.ts # Seeder untuk data awal
+│ └── migrations/ # File migrasi database
+├── generated/ # Prisma Client (generated)
+├── .env # Environment variables
 ├── package.json
 ├── tsconfig.json
 └── README.md
-```
+
+````
 
 ## 🛠️ Scripts yang Tersedia
 
@@ -120,6 +122,6 @@ Untuk melihat dan mengelola data database:
 
 ```bash
 npx prisma studio
-```
+````
 
 Akses di `http://localhost:5555`

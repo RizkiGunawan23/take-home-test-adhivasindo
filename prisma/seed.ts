@@ -1,8 +1,7 @@
 import bcrypt from "bcrypt";
 
-import { PrismaClient, Role } from "../generated/prisma";
+import { PrismaClient, Role } from "../generated/prisma/index.js";
 
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 const prisma = new PrismaClient();
 
 async function main() {
@@ -41,5 +40,5 @@ main()
         process.exit(1);
     })
     .finally(() => {
-        prisma.$disconnect();
+        void prisma.$disconnect();
     });
