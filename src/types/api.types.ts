@@ -36,6 +36,15 @@ export interface LoginResponse {
     };
 }
 
+export interface PaginationMeta {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+}
+
 export interface RefreshTokenResponse {
     tokens: AuthTokens;
 }
@@ -43,6 +52,29 @@ export interface RefreshTokenResponse {
 export interface SuccessResponse<T = unknown> {
     message?: string;
     data?: T;
+}
+
+export interface UserListItem {
+    id: string;
+    email: string;
+    name: null | string;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface UserListResponse {
+    users: UserListItem[];
+    pagination: PaginationMeta;
+}
+
+export interface UserResponse {
+    id: string;
+    email: string;
+    name: null | string;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface ValidationError {
